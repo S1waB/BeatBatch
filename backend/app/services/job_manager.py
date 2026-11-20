@@ -228,7 +228,11 @@ def create_job(links: list[ValidLink], quality: str) -> Job:
     """
     job = Job(quality=quality)
     job.items = [
-        JobItem(url=link.canonical_url, video_id=link.video_id)
+        JobItem(
+            url=link.canonical_url,
+            video_id=link.video_id,
+            title=getattr(link, "title", None),
+        )
         for link in links
     ]
     _store.add(job)

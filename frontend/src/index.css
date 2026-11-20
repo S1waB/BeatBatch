@@ -848,6 +848,12 @@ body {
   color: #f59e0b;
 }
 
+.bb-chip-info {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #60a5fa;
+}
+
 .bb-chip-clickable {
   cursor: pointer;
   transition: all 0.2s;
@@ -1143,6 +1149,34 @@ body {
   color: #fff;
   font-size: 0.95rem;
   padding: 0.75rem 1.4rem;
+}
+
+.bb-btn-download-all {
+  background: var(--primary-gradient);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(168, 85, 247, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bb-btn-download-all:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.45);
+  color: #fff;
+}
+
+.bb-items-footer-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
 }
 
 /* ==========================================================================

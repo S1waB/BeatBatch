@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { api, ApiError } from './api/client';
+import { api, ApiError, API_BASE } from './api/client';
 import type { Quality } from './api/types';
 import { BatchSummary } from './components/BatchSummary';
 import { Header } from './components/Header';
@@ -251,7 +251,7 @@ function BeatBatchMain() {
           <div className="bb-global-alert bb-alert-warning" role="alert">
             <AlertIcon size={18} />
             <span className="bb-alert-text">
-              Backend is offline or unreachable at <code>http://localhost:8000</code>.
+              Backend is offline or unreachable at <code>{API_BASE}</code>.
               Please start the FastAPI backend server (<code>uvicorn app.main:app --reload</code>).
             </span>
           </div>

@@ -129,7 +129,21 @@ A modern, high-speed batch YouTube-to-MP3 extraction engine with real-time telem
 
 ## Quick Start
 
-### Option A: Docker Compose (Recommended)
+### Option A: Python All-in-One Runner (Fastest)
+
+Run the entire application (Backend + Frontend + Browser) with a single command from the project root:
+
+```bash
+python run.py
+```
+
+- Automatically starts the FastAPI backend and Vite frontend.
+- Polls both services until ready and opens `http://localhost:5173` in your default browser.
+- Cleanly stops all background server processes when you press `Ctrl+C`.
+
+---
+
+### Option B: Docker Compose
 
 Run the entire application (Backend + Frontend + Nginx Proxy + FFmpeg) with a single command:
 

@@ -29,6 +29,7 @@ class ValidLinkOut(BaseModel):
     video_id: str
     canonical_url: str
     original_url: str
+    title: str | None = None
 
 
 class InvalidLineOut(BaseModel):

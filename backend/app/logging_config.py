@@ -44,11 +44,19 @@ class StructuredFormatter(logging.Formatter):
 
 
 class SafeStreamHandler(logging.StreamHandler):
-    """StreamHandler that ignores I/O errors on closed streams (e.g. during test tear-down)."""
+    """StreamHandler that handles Windows charmap/cp1252 encoding and closed test streams."""
 
     def emit(self, record: logging.LogRecord) -> None:
         try:
-            super().emit(record)
+            msg = self.format(record)
+            stream = self.stream
+            try:
+                stream.write(msg + self.terminator)
+            except UnicodeEncodeError:
+                enc = getattr(stream, "encoding", None) or "ascii"
+                safe_msg = msg.encode(enc, errors="backslashreplace").decode(enc)
+                stream.write(safe_msg + self.terminator)
+            self.flush()
         except (ValueError, OSError):
             pass
 

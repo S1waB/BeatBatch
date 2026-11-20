@@ -22,7 +22,7 @@ interface LinkInputProps {
 const SAMPLE_TEXT = `# BeatBatch Sample Links (one per line)
 https://www.youtube.com/watch?v=jfKfPfyJRdk
 https://youtu.be/dQw4w9WgXcY
-https://www.youtube.com/watch?v=9bZkp7q19f0
+https://www.youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj
 `;
 
 const QUALITIES: { value: Quality; label: string; desc: string }[] = [
@@ -60,6 +60,21 @@ export const LinkInput: React.FC<LinkInputProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const debouncedText = useDebounce(text, 350);
+
+  // Check if any watch link contains a playlist ID (e.g. list=PL...)
+  const watchPlaylistMatch = text.match(
+    /(?:https?:\/\/)?(?:www\.|music\.|m\.)?youtube\.com\/watch\?[^#\s]*[?&]list=(PL[A-Za-z0-9_-]+)/i
+  );
+
+  const handleExpandPlaylist = () => {
+    if (!watchPlaylistMatch) return;
+    const newText = text.replace(
+      /(?:https?:\/\/)?(?:www\.|music\.|m\.)?youtube\.com\/watch\?[^#\s]*[?&]list=(PL[A-Za-z0-9_-]+)[^\s]*/gi,
+      'https://www.youtube.com/playlist?list=$1'
+    );
+    setText(newText);
+    showToast('info', 'Playlist link updated', 'Switched to full playlist URL. Fetching tracks…');
+  };
 
   // Persist draft in localStorage
   useEffect(() => {
@@ -283,7 +298,7 @@ export const LinkInput: React.FC<LinkInputProps> = ({
             }
           }}
           onKeyDown={handleKeyDown}
-          placeholder={`Paste YouTube links here, one per line (or drag & drop a .txt file):\nhttps://www.youtube.com/watch?v=...\nhttps://youtu.be/...\nhttps://www.youtube.com/shorts/...`}
+          placeholder={`Paste YouTube links or playlist URLs here (or drag & drop a .txt file):\nhttps://www.youtube.com/watch?v=...\nhttps://youtu.be/...\nhttps://www.youtube.com/playlist?list=...`}
           rows={7}
           disabled={disabled || isStarting}
           spellCheck={false}
@@ -298,7 +313,7 @@ export const LinkInput: React.FC<LinkInputProps> = ({
             {isValidating && (
               <span className="bb-chip bb-chip-validating" role="status">
                 <SpinnerIcon size={13} />
-                <span>Validating…</span>
+                <span>Validating links & playlists…</span>
               </span>
             )}
 
@@ -315,6 +330,17 @@ export const LinkInput: React.FC<LinkInputProps> = ({
                     <strong>{totalValid}</strong> {totalValid === 1 ? 'valid link' : 'valid links'}
                   </span>
                 </span>
+
+                {watchPlaylistMatch && (
+                  <button
+                    type="button"
+                    className="bb-chip bb-chip-info bb-chip-clickable"
+                    onClick={handleExpandPlaylist}
+                    title="Click to convert watch URL with playlist to full playlist URL"
+                  >
+                    <span>💡 Playlist detected: <u>Import full playlist</u></span>
+                  </button>
+                )}
 
                 {totalInvalid > 0 && (
                   <button
@@ -413,7 +439,7 @@ export const LinkInput: React.FC<LinkInputProps> = ({
             ) : (
               <>
                 <PlayIcon size={16} />
-                <span>Start Download ({totalValid})</span>
+                <span>Download All Links ({totalValid})</span>
                 <kbd className="bb-btn-kbd">Ctrl+↵</kbd>
               </>
             )}

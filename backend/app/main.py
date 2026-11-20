@@ -66,7 +66,7 @@ async def lifespan(app: FastAPI):
     from app.services.cleanup import start_cleanup_scheduler
     cleanup_task = start_cleanup_scheduler()
 
-    logger.info("🚀 BeatBatch backend is ready")
+    logger.info("[READY] BeatBatch backend is ready")
 
     yield  # ← application runs here
 
@@ -92,6 +92,7 @@ origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

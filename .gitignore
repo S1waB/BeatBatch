@@ -10,6 +10,7 @@ venv/
 .env
 
 # Downloads (generated MP3 files)
+downloads/
 backend/downloads/*
 !backend/downloads/.gitkeep
 

@@ -164,18 +164,33 @@ class TestInvalidLines:
         assert len(invalid) == 1
         assert "Not a recognised YouTube video URL." in invalid[0].reason
 
-    def test_playlist_only_url_flagged_with_clear_reason(self):
+    def test_playlist_only_url_accepted_and_extracted(self, monkeypatch):
+        monkeypatch.setattr(
+            "app.services.link_parser.extract_playlist_items",
+            lambda url, max_items=100: ((VIDEO_ID, CANONICAL, "Rick Astley"),),
+        )
+        valid, invalid = parse_links(PLAYLIST_ONLY)
+        assert len(valid) == 1
+        assert valid[0].video_id == VIDEO_ID
+        assert valid[0].title == "Rick Astley"
+        assert invalid == []
+
+    def test_playlist_empty_returns_invalid(self, monkeypatch):
+        monkeypatch.setattr(
+            "app.services.link_parser.extract_playlist_items",
+            lambda url, max_items=100: (),
+        )
         valid, invalid = parse_links(PLAYLIST_ONLY)
         assert valid == []
         assert len(invalid) == 1
-        assert "playlist" in invalid[0].reason.lower()
+        assert "empty" in invalid[0].reason.lower()
 
-    def test_playlist_with_video_id_flagged_too(self):
-        """A URL that has both ?v= and &list= contains a playlist param → invalid."""
+    def test_playlist_with_video_id_is_valid(self):
+        """A URL with ?v= and &list= is accepted as the video."""
         valid, invalid = parse_links(PLAYLIST_WITH_VIDEO)
-        # The URL has a list param; current policy = invalid
-        assert len(invalid) == 1
-        assert "playlist" in invalid[0].reason.lower()
+        assert len(valid) == 1
+        assert valid[0].video_id == VIDEO_ID
+        assert invalid == []
 
     def test_line_numbers_in_invalid_are_1_indexed(self):
         text = f"\n{GARBAGE}"  # line 1 blank, line 2 garbage
@@ -202,7 +217,7 @@ class TestInvalidLines:
     def test_valid_link_to_dict(self):
         valid, _ = parse_links(WATCH)
         d = valid[0].to_dict()
-        assert set(d.keys()) == {"video_id", "canonical_url", "original_url"}
+        assert set(d.keys()) == {"video_id", "canonical_url", "original_url", "title"}
 
 
 class TestMixedInput:
@@ -291,13 +306,18 @@ class TestValidateEndpoint:
         assert data["total_valid"] == 1
         assert data["total_invalid"] == 1
 
-    def test_playlist_url_returns_invalid_with_reason(self, client):
+    def test_playlist_url_validates_successfully(self, client, monkeypatch):
+        monkeypatch.setattr(
+            "app.services.link_parser.extract_playlist_items",
+            lambda url, max_items=100: ((VIDEO_ID, CANONICAL, "Rick Astley"),),
+        )
         resp = client.post("/api/validate", json={"text": PLAYLIST_ONLY})
         assert resp.status_code == 200
         data = resp.json()
-        assert data["total_valid"] == 0
-        assert data["total_invalid"] == 1
-        assert "playlist" in data["invalid_lines"][0]["reason"].lower()
+        assert data["total_valid"] == 1
+        assert data["total_invalid"] == 0
+        assert data["valid_links"][0]["video_id"] == VIDEO_ID
+        assert data["valid_links"][0]["title"] == "Rick Astley"
 
     def test_empty_text_returns_empty_lists(self, client):
         resp = client.post("/api/validate", json={"text": ""})

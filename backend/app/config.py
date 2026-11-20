@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     download_dir: str = "downloads"
 
     # Comma-separated list of allowed CORS origins
-    cors_origins: str = "http://localhost:5173"
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     # Uvicorn host / port (used when running via `python -m app.main`)
     host: str = "0.0.0.0"
@@ -25,8 +25,8 @@ class Settings(BaseSettings):
     # Browser to read cookies from automatically.
     # Supported values: "chrome", "edge", "firefox", "safari", "brave",
     #                   "opera", "chromium", "vivaldi", or "" to disable.
-    # Set to "auto" to let BeatBatch try common browsers in order.
-    cookies_from_browser: str = "auto"
+    # Set to "" by default so it does not hang attempting to access locked browser databases.
+    cookies_from_browser: str = ""
 
     # Absolute path to a Netscape-format cookies.txt file (alternative to
     # browser extraction).  Leave empty to use browser cookies instead.

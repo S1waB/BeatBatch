@@ -39,7 +39,7 @@ export const BatchSummary: React.FC<BatchSummaryProps> = ({
 
   const isRunning = job.status === 'running' || job.status === 'queued';
   const isFinished = ['done', 'partial', 'failed', 'cancelled'].includes(job.status);
-  const canDownloadZip = doneCount > 0 && isFinished;
+  const canDownloadZip = doneCount > 0;
 
   const zipUrl = api.getZipDownloadUrl(job.id);
 
@@ -108,17 +108,17 @@ export const BatchSummary: React.FC<BatchSummaryProps> = ({
             </button>
           )}
 
-          {/* Download ZIP */}
+          {/* Download All / ZIP */}
           {canDownloadZip && (
             <a
               href={zipUrl}
               download
               className="bb-btn bb-btn-primary bb-btn-zip"
-              title="Download all converted MP3s in a single ZIP archive"
+              title="Download all completed MP3 tracks in a single ZIP archive"
               aria-label={`Download all ${doneCount} MP3 tracks as a ZIP archive`}
             >
               <ZipIcon size={16} />
-              <span>Download ZIP ({doneCount})</span>
+              <span>Download All ({doneCount})</span>
             </a>
           )}
 

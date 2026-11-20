@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import type { JobItem } from '../api/types';
 import { ItemCard } from './ItemCard';
-import { RetryIcon } from './Icons';
+import { DownloadIcon, RetryIcon } from './Icons';
+import { api } from '../api/client';
 
 interface ItemListProps {
   items: JobItem[];
@@ -98,6 +99,19 @@ export const ItemList: React.FC<ItemListProps> = ({
         </div>
 
         <div className="bb-items-toolbar-right">
+          {counts.done > 0 && (
+            <a
+              href={api.getZipDownloadUrl(jobId)}
+              download
+              className="bb-btn bb-btn-primary bb-btn-download-all"
+              title={`Download all ${counts.done} completed tracks as a ZIP`}
+              aria-label={`Download all ${counts.done} completed tracks`}
+            >
+              <DownloadIcon size={14} />
+              <span>Download All ({counts.done})</span>
+            </a>
+          )}
+
           {counts.error > 0 && onRetryAllFailed && (
             <button
               type="button"
@@ -152,6 +166,20 @@ export const ItemList: React.FC<ItemListProps> = ({
           ))
         )}
       </div>
+
+      {counts.done > 0 && items.length > 3 && (
+        <div className="bb-items-footer-actions">
+          <a
+            href={api.getZipDownloadUrl(jobId)}
+            download
+            className="bb-btn bb-btn-primary bb-btn-zip"
+            title={`Download all ${counts.done} completed tracks as a ZIP archive`}
+          >
+            <DownloadIcon size={16} />
+            <span>Download All Completed Tracks ({counts.done})</span>
+          </a>
+        </div>
+      )}
     </section>
   );
 };

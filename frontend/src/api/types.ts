@@ -8,6 +8,7 @@ export interface ValidLink {
   video_id: string;
   canonical_url: string;
   original_url: string;
+  title?: string | null;
 }
 
 export interface InvalidLine {
